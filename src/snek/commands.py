@@ -6,10 +6,10 @@ import yaml
 
 from sultan.api import Sultan
 from snek.error import SnekInitializationError
-from snek.utils import cli_request, load_snekfile
+from snek.utils import cli_request, load_snekfile, save_snekfile
 
 
-def init_command():
+def init_command(data_format):
     """
     Creates a New Python project, and places a 'Snekfile' with the necessary information
     to manage a Python Project.
@@ -89,8 +89,7 @@ def init_command():
         snekfile_params['project']['tasks']['hello'] = ['echo "Hello Snek!"', 'cat Snekfile']
 
         snekfile_path = os.path.join(pwd, 'Snekfile')
-        with open(snekfile_path, 'w') as f:
-            yaml.dump(snekfile_params, f, default_flow_style=False)
+        save_snekfile(snekfile_params, data_format)
 
         with Sultan.load(cwd=pwd) as s:
             r = s.cat(snekfile_path).run()
@@ -128,3 +127,26 @@ def steve_command():
     click.echo("          \      ~-____-~    _-~    ~-_    ~-_-~    /")
     click.echo("            ~-_           _-~          ~-_       _-~")
     click.echo("               ~--______-~                ~-___-~")
+
+def task_run_command(name):
+
+    snekfile = load_snekfile().get('project', {})
+    try:
+        tasks = snekfile.get('tasks', {}).get(name)
+        if not tasks:
+            raise SnekTaskNotFound("'%s' task is not found in Snekfile" % (name))
+        
+        with Sultan.load() as s:
+            header = "Executing '%s'" % name
+            click.secho("-" * len(header), fg='cyan')
+            click.secho(header, fg='cyan')
+            click.secho("-" * len(header), fg='cyan')
+            for task in tasks:
+                s.commands = [task]
+                response = s.run()
+                for line in response:
+                    click.secho(".\t" + line, fg='magenta')
+
+    except Exception, e:
+        click.secho("ERROR: Unable to run task '%s'" % (name), fg='red')
+        click.secho("ERROR: %s" % e.message, fg='red')

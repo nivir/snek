@@ -1,5 +1,6 @@
 import click
 import os
+import simplejson as json
 import yaml
 
 from six.moves import input
@@ -56,6 +57,7 @@ def load_snekfile():
     pwd = os.environ.get('PWD')
     snekfile_path = os.path.join(pwd, 'Snekfile')
     if os.path.exists(snekfile_path):
+
         with open(snekfile_path, 'r') as f:
             try:
                 return yaml.load(f)
@@ -63,3 +65,15 @@ def load_snekfile():
                 return {}
     else:
         return {}
+
+def save_snekfile(data, format):
+
+    pwd = os.environ.get('PWD')
+    snekfile_path = os.path.join(pwd, 'Snekfile')
+
+    if format in ['yml', 'yaml']:
+        with open(snekfile_path, 'w') as f:
+            yaml.dump(data, f, default_flow_style=False)
+    else:
+        with open(snekfile_path, 'w') as f:
+            json.dump(data, f, indent=4)
