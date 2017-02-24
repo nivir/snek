@@ -1,0 +1,17 @@
+project:
+  author: David Daniel
+  author_email: davydany@gmail.com
+  tasks:
+    hello:
+    - echo "Hello Snek!"
+    - cat Snekfile
+  dependencies:
+    dev:
+    - ipython
+    - ipdb
+  description: Foo Bar
+  interpretter: 2
+  license: MIT
+  name: snek
+  type: cli
+  version: 0.1.0
