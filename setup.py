@@ -8,7 +8,7 @@ with open("./VERSION") as f:
 
 setup(
     name='snek',
-    description='Python Project Management',
+    description='Simple Python Project Management',
     long_description=LONG_DESCRIPTION,
     version=VERSION,
     author='David Daniel',
